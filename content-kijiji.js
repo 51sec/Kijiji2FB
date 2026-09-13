@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Jon Netsec / 51Sec Inc. Licensed under the MIT License.
+// See LICENSE in the project root. Retain this notice in copies/redistributions.
+//
 // Runs on Kijiji ad view pages (https://www.kijiji.ca/v-.../<adId>).
 // Scrapes the listing and injects a "Send to Facebook Marketplace" button.
 

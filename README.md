@@ -4,6 +4,22 @@ A Chrome extension that captures a Kijiji ad with one click and auto-fills
 a new Facebook Marketplace listing from it (title, price, category,
 condition, description, photos). One-directional: Kijiji → Facebook only.
 
+> The screenshots below are sanitized mockups (placeholder listing, generic
+> account name) built to illustrate the flow without exposing anyone's real
+> Kijiji/Facebook account.
+
+**1. Capture on Kijiji** — a button is injected above the ad title:
+
+![Kijiji capture button](screenshots/kijiji-capture.png)
+
+**2. Review captured listings in the popup:**
+
+![Extension popup](screenshots/extension-popup.png)
+
+**3. Auto-filled on Facebook Marketplace, ready for you to review and publish:**
+
+![Facebook auto-fill](screenshots/facebook-autofill.png)
+
 ## Install (unpacked, for local use)
 
 1. Open `chrome://extensions`
@@ -102,3 +118,12 @@ The extension deliberately does **not** click Next/Publish for you:
 ## License
 
 MIT © 2026 Jon Netsec / 51Sec Inc. See [LICENSE](LICENSE).
+
+**Attribution is not optional.** The MIT License is permissive — you may
+use, modify, and redistribute this code, including commercially — but
+Section 2 of that license legally *requires* that the copyright notice
+above and the license text itself be included in every copy or substantial
+portion of this software that you distribute, whether as source code, a
+packaged extension, or a fork. Stripping the copyright notice, claiming
+this work as your own, or redistributing it without attribution to
+**Jon Netsec / 51Sec Inc.** is a violation of the license, not a gray area.

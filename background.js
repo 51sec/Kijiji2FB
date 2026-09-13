@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Jon Netsec / 51Sec Inc. Licensed under the MIT License.
+// See LICENSE in the project root. Retain this notice in copies/redistributions.
+//
 // Background service worker: storage of captured listings, image fetching
 // (bypasses page-level CORS since this runs in the extension's privileged
 // context with host_permissions), and orchestration of the Facebook tab.

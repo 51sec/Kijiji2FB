@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Jon Netsec / 51Sec Inc. Licensed under the MIT License.
+// See LICENSE in the project root. Retain this notice in copies/redistributions.
+//
 // Runs on https://www.facebook.com/marketplace/create/item
 // Fills the "create listing" form from a listing captured on Kijiji.
 //
