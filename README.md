@@ -130,6 +130,13 @@ This extension is built with Chrome Web Store review in mind:
   the "Privacy policy" link in the Developer Dashboard listing.
 - **Single purpose**: capture a Kijiji listing and pre-fill it into a new
   Facebook Marketplace draft. It does not do anything else.
+- **A promo tile** is included at
+  [store-assets/promo-tile-440x280.png](store-assets/promo-tile-440x280.png)
+  (440×280, the Chrome Web Store's "small promo tile" size) — upload it
+  under the listing's store assets. It spells out "Kijiji → Marketplace"
+  in plain text (fine — naming a brand in text to describe compatibility
+  is normal fair use) since that's illegible at actual icon sizes but
+  works fine on a large promotional tile.
 - Still worth double-checking before submitting: add real screenshots
   (1280×800 or 640×400) and short/full descriptions in the Developer
   Dashboard, and fill out the permissions-justification form referencing
