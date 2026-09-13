@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Kijiji &rarr; Facebook Marketplace</title>
+  <style>
+    body {
+      width: 340px;
+      font: 13px/1.4 -apple-system, Segoe UI, Roboto, sans-serif;
+      margin: 0;
+      padding: 12px;
+      color: #1c1e21;
+    }
+    h1 {
+      font-size: 15px;
+      margin: 0 0 8px;
+    }
+    .hint {
+      color: #65676b;
+      margin-bottom: 12px;
+    }
+    .listing {
+      display: flex;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid #e4e6eb;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+    .listing img {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      border-radius: 6px;
+      background: #f0f2f5;
+      flex-shrink: 0;
+    }
+    .listing .info {
+      flex: 1;
+      min-width: 0;
+    }
+    .listing .info .title {
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .listing .info .meta {
+      color: #65676b;
+      font-size: 12px;
+    }
+    .listing .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+    }
+    .push {
+      background: #1877f2;
+      color: #fff;
+    }
+    .delete {
+      background: #e4e6eb;
+      color: #1c1e21;
+    }
+    .empty {
+      color: #65676b;
+      text-align: center;
+      padding: 24px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Kijiji &rarr; Facebook Marketplace</h1>
+  <div class="hint">Open a Kijiji ad and click "Send to Facebook Marketplace" to capture it, then push it here.</div>
+  <div id="list"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
