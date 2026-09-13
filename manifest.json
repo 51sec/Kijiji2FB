@@ -1,20 +1,29 @@
 {
   "manifest_version": 3,
   "name": "Kijiji → Facebook Marketplace Sync",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Capture a Kijiji ad with one click and auto-fill it into a new Facebook Marketplace listing.",
-  "permissions": ["storage", "activeTab", "tabs", "unlimitedStorage", "debugger"],
+  "permissions": ["storage", "activeTab", "tabs", "unlimitedStorage"],
   "host_permissions": [
     "https://www.kijiji.ca/*",
-    "https://media.kijiji.ca/*",
-    "https://www.facebook.com/*"
+    "https://media.kijiji.ca/*"
   ],
   "background": {
     "service_worker": "background.js"
   },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Kijiji → FB Marketplace"
+    "default_title": "Kijiji → FB Marketplace",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
   },
   "content_scripts": [
     {

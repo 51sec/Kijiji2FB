@@ -7,62 +7,6 @@
 
 const FB_CREATE_URL = 'https://www.facebook.com/marketplace/create/item';
 
-// Facebook's Category/Condition pickers ignore script-dispatched mouse events
-// (confirmed by testing: plain and full pointer-event sequences on the
-// option rows have no effect, while a real click works). chrome.debugger's
-// Input.dispatchMouseEvent injects clicks at the browser-process level, so
-// the page sees them as genuinely trusted input — this is the only reliable
-// way to select those options. It's attached only while filling a listing
-// and detached immediately after; Chrome shows its own "extension is
-// debugging this tab" banner the whole time it's attached, by design.
-const debuggedTabs = new Set();
-
-async function ensureDebuggerAttached(tabId) {
-  if (debuggedTabs.has(tabId)) return;
-  await chrome.debugger.attach({ tabId }, '1.3');
-  debuggedTabs.add(tabId);
-}
-
-async function detachDebugger(tabId) {
-  if (!debuggedTabs.has(tabId)) return;
-  debuggedTabs.delete(tabId);
-  try {
-    await chrome.debugger.detach({ tabId });
-  } catch (err) {
-    // already detached (e.g. user closed the tab) — fine to ignore
-  }
-}
-
-chrome.debugger.onDetach.addListener((source) => {
-  debuggedTabs.delete(source.tabId);
-});
-
-async function cdpClick(tabId, x, y) {
-  await ensureDebuggerAttached(tabId);
-  await chrome.debugger.sendCommand({ tabId }, 'Input.dispatchMouseEvent', {
-    type: 'mouseMoved',
-    x,
-    y,
-    buttons: 0,
-  });
-  await chrome.debugger.sendCommand({ tabId }, 'Input.dispatchMouseEvent', {
-    type: 'mousePressed',
-    x,
-    y,
-    button: 'left',
-    buttons: 1,
-    clickCount: 1,
-  });
-  await chrome.debugger.sendCommand({ tabId }, 'Input.dispatchMouseEvent', {
-    type: 'mouseReleased',
-    x,
-    y,
-    button: 'left',
-    buttons: 0,
-    clickCount: 1,
-  });
-}
-
 async function getListings() {
   const { listings = [] } = await chrome.storage.local.get('listings');
   return listings;
@@ -160,22 +104,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
       case 'CLEAR_PENDING_LISTING': {
         await chrome.storage.local.remove('pendingListingId');
-        sendResponse({ ok: true });
-        break;
-      }
-
-      case 'CDP_CLICK': {
-        try {
-          await cdpClick(sender.tab.id, message.x, message.y);
-          sendResponse({ ok: true });
-        } catch (err) {
-          sendResponse({ ok: false, error: String(err) });
-        }
-        break;
-      }
-
-      case 'CDP_DETACH': {
-        if (sender.tab) await detachDebugger(sender.tab.id);
         sendResponse({ ok: true });
         break;
       }

@@ -5,12 +5,23 @@
 // Fills the "create listing" form from a listing captured on Kijiji.
 //
 // Facebook's DOM has no stable public API, no test-ids, and (confirmed by
-// inspecting the live form) no aria-label on Title/Price/Description/
-// Category/Condition either. What it does have is a floating-label pattern:
-// each field is `<label><span>Field name</span><input-or-control></label>`,
-// with the field name as an exact-text leaf span. That's the hook this
-// script keys off of instead. It fails soft field-by-field: if one field's
-// label text can't be found, it's logged and left for the user.
+// inspecting the live form) no aria-label on Title/Price/Description either.
+// What it does have is a floating-label pattern: each field is
+// `<label><span>Field name</span><input></label>`, with the field name as an
+// exact-text leaf span. That's the hook this script keys off of instead. It
+// fails soft field-by-field: if one field's label text can't be found, it's
+// logged and left for the user.
+//
+// Category and Condition are intentionally NOT auto-filled. Both are custom
+// picker widgets that ignore script-dispatched clicks on their option rows —
+// only a genuinely trusted (real, physical) click commits a selection there.
+// The only reliable programmatic workaround found was chrome.debugger
+// (Chrome DevTools Protocol), which this extension deliberately does not use:
+// that permission is heavily scrutinized in Chrome Web Store review, and
+// bypassing a site's own anti-automation guard is the kind of thing that
+// gets extensions rejected or pulled. So both fields are left for you to
+// pick — the Kijiji category/condition are still captured and shown as
+// hints in the popup and the on-page banner below.
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -34,9 +45,6 @@ function findLabelSpan(text) {
   return null;
 }
 
-// Returns the input/textarea for a plain text field, or the <label> itself
-// for a custom picker like Category/Condition (whose <label> has
-// role="combobox" and is what you click to open it).
 function queryByLabels(labels) {
   for (const text of labels) {
     const span = findLabelSpan(text);
@@ -45,7 +53,6 @@ function queryByLabels(labels) {
     if (!label) continue;
     const field = label.querySelector('input, textarea, [contenteditable="true"]');
     if (field) return field;
-    if (label.getAttribute('role') === 'combobox') return label;
   }
   return null;
 }
@@ -97,90 +104,6 @@ function dataUrlToFile(dataUrl, filename) {
   return new File([bytes], filename, { type: mime });
 }
 
-// Facebook's Condition field (like Category) is a custom picker: clicking it
-// opens a flat list of plain divs (no role/aria attributes) representing the
-// options. Testing showed these rows ignore script-dispatched mouse events
-// entirely (including full pointerdown/pointerup/click sequences) — Facebook
-// appears to require a genuinely trusted click to commit a selection. A plain
-// .click() DOES work to open the picker itself, just not to choose a row.
-// So: open with .click(), then commit the choice via the background script's
-// chrome.debugger-based trusted click (see background.js).
-async function trustedClick(el) {
-  el.scrollIntoView({ block: 'center', inline: 'center' });
-  await sleep(200);
-  const rect = el.getBoundingClientRect();
-  const x = Math.round(rect.x + rect.width / 2);
-  const y = Math.round(rect.y + rect.height / 2);
-  const res = await chrome.runtime.sendMessage({ type: 'CDP_CLICK', x, y });
-  return !!res?.ok;
-}
-
-function normalizeOptionText(s) {
-  return (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
-}
-
-async function findMatchingOption(term, timeout = 3000) {
-  const target = normalizeOptionText(term);
-  if (!target) return null;
-  return waitFor(() => {
-    const containers = document.querySelectorAll('div, span');
-    for (const leaf of containers) {
-      if (leaf.children.length !== 0) continue; // want the innermost text node's element
-      const label = normalizeOptionText(leaf.innerText);
-      if (!label) continue;
-      if (label === target || label.includes(target) || target.includes(label)) {
-        // walk up to the clickable row: the ancestor whose parent has several
-        // siblings (one per option in the list). On Facebook's real DOM this
-        // was measured at 10 ancestors up from the label's leaf text node;
-        // the extra margin here is to tolerate minor depth differences
-        // between the Category and Condition pickers.
-        let node = leaf;
-        for (let i = 0; i < 16 && node.parentElement; i++) {
-          if (node.parentElement.children.length >= 3) return node;
-          node = node.parentElement;
-        }
-      }
-    }
-    return null;
-  }, { timeout, interval: 150 });
-}
-
-async function selectPickerOption(fieldLabels, candidateTerms) {
-  const terms = candidateTerms.filter(Boolean);
-  if (!terms.length) return false;
-
-  const control = queryByLabels(fieldLabels);
-  if (!control) {
-    console.warn(`[kijiji-fb-sync] could not find the ${fieldLabels[0]} control`);
-    return false;
-  }
-  control.click();
-  await sleep(400);
-
-  for (const term of terms) {
-    const option = await findMatchingOption(term, 2000);
-    if (option) {
-      const ok = await trustedClick(option);
-      if (ok) return true;
-    }
-  }
-  console.warn(`[kijiji-fb-sync] no ${fieldLabels[0]} option matched: ${terms.join(', ')}`);
-  document.body.click(); // close whatever menu we opened
-  return false;
-}
-
-async function fillCondition(condition) {
-  if (!condition) return false;
-  return selectPickerOption(['Condition'], [condition]);
-}
-
-// Category is deliberately left for manual selection: Kijiji's breadcrumb
-// categories don't map cleanly onto Facebook's flat ~30-category list, and
-// matching it well enough to trust added complexity (and reviewer scrutiny,
-// since it leans on the same chrome.debugger trusted-click mechanism as
-// Condition) without a proportional benefit. The Kijiji category is still
-// captured and shown in the popup and the on-page banner as a hint.
-
 async function fillPhotos(images) {
   if (!images || images.length === 0) return false;
   const input = await waitFor(() => document.querySelector('input[type="file"][accept*="image"]'));
@@ -225,30 +148,23 @@ async function fillListing(listing) {
   };
   const photosFilled = await fillPhotos(listing.images);
 
-  let conditionFilled = false;
-  try {
-    conditionFilled = await fillCondition(listing.condition);
-  } finally {
-    // Detach the debugger session as soon as we're done with the trusted
-    // click it was needed for, so the "being debugged" banner doesn't
-    // linger longer than necessary.
-    await chrome.runtime.sendMessage({ type: 'CDP_DETACH' });
-  }
+  const manualFields = [];
+  manualFields.push(listing.category ? `category (Kijiji: "${listing.category}")` : 'category');
+  manualFields.push(listing.condition ? `condition (Kijiji: "${listing.condition}")` : 'condition');
 
   const missing = [];
   if (!filled.title) missing.push('title');
   if (!filled.price) missing.push('price');
   if (!filled.description) missing.push('description');
   if (!photosFilled) missing.push('photos');
-  if (!conditionFilled) missing.push(listing.condition ? `condition (was "${listing.condition}")` : 'condition');
-  // Category is always manual — see the comment above, after fillCondition.
-  missing.push(listing.category ? `category (Kijiji: "${listing.category}")` : 'category');
 
-  showBanner(
-    missing.length
-      ? `Filled from Kijiji. Please double-check: ${missing.join(', ')}. Then review everything and click Next to publish.`
-      : 'Filled from Kijiji. Review everything, then click Next to publish.'
-  );
+  const parts = [
+    missing.length ? `Couldn't fill: ${missing.join(', ')}.` : null,
+    `Please set manually: ${manualFields.join(', ')}.`,
+    'Then review everything and click Next to publish.',
+  ].filter(Boolean);
+
+  showBanner(`Filled from Kijiji. ${parts.join(' ')}`);
 
   await chrome.runtime.sendMessage({ type: 'CLEAR_PENDING_LISTING' });
 }
