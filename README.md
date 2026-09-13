@@ -117,13 +117,40 @@ The extension deliberately does **not** click Next/Publish for you:
 
 ## License
 
-MIT © 2026 Jon Netsec / 51Sec Inc. See [LICENSE](LICENSE).
+**Copyright © 2026 Jon Netsec / 51Sec Inc. All rights not expressly granted
+below are reserved.**
 
-**Attribution is not optional.** The MIT License is permissive — you may
-use, modify, and redistribute this code, including commercially — but
-Section 2 of that license legally *requires* that the copyright notice
-above and the license text itself be included in every copy or substantial
-portion of this software that you distribute, whether as source code, a
-packaged extension, or a fork. Stripping the copyright notice, claiming
-this work as your own, or redistributing it without attribution to
-**Jon Netsec / 51Sec Inc.** is a violation of the license, not a gray area.
+This project is licensed under the [MIT License](LICENSE). In plain terms,
+that means:
+
+- ✅ **Use** — you may run and use this code, privately or commercially, at
+  no cost.
+- ✅ **Modify** — you may change, extend, or build on top of it.
+- ✅ **Redistribute** — you may share it, bundle it, package it as a
+  browser extension, or publish a fork of it, including for commercial
+  purposes.
+- ⚠️ **On one condition, with no exceptions:** every copy or substantial
+  portion of this software that you use, modify, or redistribute — as
+  source code, a packaged/compiled extension, or a fork — **must retain
+  the original copyright notice above and the full MIT license text.**
+  This is not a courtesy request; it is Section 2 of the license text you
+  are bound by the moment you use this code, and it is legally
+  enforceable.
+
+**What this means concretely:**
+- Do **not** delete, edit, or paraphrase the copyright notice.
+- Do **not** re-license a fork or derivative under your own name/company
+  without keeping this notice.
+- Do **not** present this work, in whole or substantial part, as your own
+  original creation.
+- Forks, mirrors, and redistributed packages must carry this same notice
+  and a copy of the [LICENSE](LICENSE) file.
+
+Doing any of the above is a license violation, not a gray area, and the
+copyright holder (**Jon Netsec / 51Sec Inc.**) reserves the right to
+enforce it.
+
+This software is also provided **"as is," with no warranty of any kind**
+(see [LICENSE](LICENSE) for the full disclaimer) — you use it entirely at
+your own risk, including with respect to any third-party platform's (e.g.
+Facebook's) terms of service.
