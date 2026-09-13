@@ -7,6 +7,55 @@
 
 const FB_CREATE_URL = 'https://www.facebook.com/marketplace/create/item';
 
+// Free tier: a lifetime cap on how many distinct Kijiji listings can be
+// pushed to Facebook. Re-pushing the same listing again doesn't consume
+// another slot -- only the count of *distinct* listing ids that have ever
+// been pushed matters. Entering a valid Gumroad license key removes the cap.
+const FREE_LISTING_LIMIT = 3;
+
+// Fill this in once the Gumroad product exists (Product > Settings > the
+// permalink at the end of the product's short URL, e.g. gumroad.com/l/XXXX
+// -> permalink is "XXXX"). Left blank, license activation always fails.
+const GUMROAD_PRODUCT_PERMALINK = '';
+
+async function getPushedListingIds() {
+  const { pushedListingIds = [] } = await chrome.storage.local.get('pushedListingIds');
+  return pushedListingIds;
+}
+
+async function getLicense() {
+  const { license = null } = await chrome.storage.local.get('license');
+  return license; // { key, activatedAt } or null
+}
+
+async function isPro() {
+  return !!(await getLicense());
+}
+
+async function verifyGumroadLicense(licenseKey) {
+  if (!GUMROAD_PRODUCT_PERMALINK) {
+    return { ok: false, error: 'License verification isn\'t configured yet.' };
+  }
+  try {
+    const body = new URLSearchParams({
+      product_permalink: GUMROAD_PRODUCT_PERMALINK,
+      license_key: licenseKey,
+    });
+    const res = await fetch('https://api.gumroad.com/v2/licenses/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+    });
+    const data = await res.json();
+    if (!data.success) {
+      return { ok: false, error: 'That license key isn\'t valid.' };
+    }
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: 'Could not reach the license server. Try again later.' };
+  }
+}
+
 async function getListings() {
   const { listings = [] } = await chrome.storage.local.get('listings');
   return listings;
@@ -73,6 +122,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           sendResponse({ ok: false, error: 'Listing not found' });
           break;
         }
+
+        const pushedIds = await getPushedListingIds();
+        const alreadyCounted = pushedIds.includes(listing.id);
+        if (!alreadyCounted && pushedIds.length >= FREE_LISTING_LIMIT && !(await isPro())) {
+          sendResponse({ ok: false, limitReached: true, limit: FREE_LISTING_LIMIT });
+          break;
+        }
+
         await chrome.storage.local.set({ pendingListingId: listing.id });
 
         const tabs = await chrome.tabs.query({ url: FB_CREATE_URL + '*' });
@@ -82,6 +139,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           await chrome.tabs.reload(tab.id);
         } else {
           tab = await chrome.tabs.create({ url: FB_CREATE_URL });
+        }
+
+        if (!alreadyCounted) {
+          await chrome.storage.local.set({ pushedListingIds: [...pushedIds, listing.id] });
         }
         sendResponse({ ok: true });
         break;
@@ -105,6 +166,27 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       case 'CLEAR_PENDING_LISTING': {
         await chrome.storage.local.remove('pendingListingId');
         sendResponse({ ok: true });
+        break;
+      }
+
+      case 'GET_LICENSE_STATUS': {
+        const pushedIds = await getPushedListingIds();
+        sendResponse({
+          isPro: await isPro(),
+          pushedCount: pushedIds.length,
+          limit: FREE_LISTING_LIMIT,
+        });
+        break;
+      }
+
+      case 'ACTIVATE_LICENSE': {
+        const result = await verifyGumroadLicense(message.licenseKey);
+        if (result.ok) {
+          await chrome.storage.local.set({
+            license: { key: message.licenseKey, activatedAt: Date.now() },
+          });
+        }
+        sendResponse(result);
         break;
       }
 

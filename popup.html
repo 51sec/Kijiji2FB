@@ -79,12 +79,84 @@
       text-align: center;
       padding: 24px 0;
     }
+    .quota {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      background: #f0f2f5;
+      color: #444;
+    }
+    .quota.pro {
+      background: #e7f3ff;
+      color: #1877f2;
+      font-weight: 600;
+    }
+    .quota.limit-reached {
+      background: #fdecea;
+      color: #a02622;
+    }
+    .upgrade {
+      display: none;
+      border: 1px solid #ffd9b3;
+      background: #fff8f0;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #5a3d1a;
+    }
+    .upgrade.visible {
+      display: block;
+    }
+    .upgrade a {
+      color: #1877f2;
+      font-weight: 600;
+    }
+    details.license {
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    details.license summary {
+      cursor: pointer;
+      color: #65676b;
+    }
+    .license-form {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .license-form input {
+      flex: 1;
+      font: inherit;
+      padding: 6px 8px;
+      border: 1px solid #ccd0d5;
+      border-radius: 6px;
+    }
+    .license-status {
+      margin-top: 4px;
+      font-size: 12px;
+    }
   </style>
 </head>
 <body>
   <h1>Kijiji to Marketplace</h1>
   <div class="hint">Open a Kijiji ad and click "Send to Facebook Marketplace" to capture it, then push it here.</div>
+  <div id="quota" class="quota"></div>
+  <div id="upgrade" class="upgrade">
+    You've used all your free listings. Upgrade to
+    <strong>Kijiji to Marketplace Pro</strong> for unlimited listings:
+    <a id="upgrade-link" href="#" target="_blank" rel="noopener">get a license key</a>.
+  </div>
   <div id="list"></div>
+  <details class="license">
+    <summary>Have a Pro license key?</summary>
+    <div class="license-form">
+      <input id="license-key" type="text" placeholder="License key" />
+      <button id="activate-license" class="push">Activate</button>
+    </div>
+    <div id="license-status" class="license-status"></div>
+  </details>
   <script src="popup.js"></script>
 </body>
 </html>
