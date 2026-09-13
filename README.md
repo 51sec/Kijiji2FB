@@ -5,6 +5,11 @@ a new Facebook Marketplace listing from it (title, price, description,
 photos — category and condition are left for you to pick, see below).
 One-directional: Kijiji → Facebook only.
 
+> **Not affiliated with, endorsed by, or sponsored by** Kijiji, eBay
+> Canada, Meta Platforms, Inc., or Facebook. "Kijiji" and "Facebook
+> Marketplace" are used here only to describe what this independent,
+> unofficial tool is compatible with.
+
 > The screenshots below are sanitized mockups (placeholder listing, generic
 > account name) built to illustrate the flow without exposing anyone's real
 > Kijiji/Facebook account.
@@ -116,12 +121,21 @@ The extension deliberately does **not** click Next/Publish for you:
 This extension is built with Chrome Web Store review in mind:
 
 - **No `chrome.debugger` permission** — removed along with the
-  Category/Condition auto-select it powered (see above). The remaining
-  permissions are `storage`, `activeTab`, `tabs`, `unlimitedStorage`, plus
-  host access scoped to exactly `kijiji.ca`/`media.kijiji.ca` (to read the
-  ad and fetch its photos) — Facebook access comes only through the
-  `content_scripts` match on the one create-listing path, not a broad
-  host permission.
+  Category/Condition auto-select it powered (see above).
+- **Permissions trimmed to the minimum that's actually used**: only
+  `storage` and `unlimitedStorage` remain in `permissions`. `activeTab`
+  was requested but never used (removed — an unused permission is itself
+  a common rejection reason). `tabs` was also removed: `chrome.tabs.
+  create`/`update`/`reload` don't require it, and the one call that
+  filters by URL (`chrome.tabs.query({ url: ... })`, used to reuse an
+  already-open Facebook tab) works via host permission instead, per
+  Chrome's documented behavior. Host access is scoped to exactly
+  `kijiji.ca`/`media.kijiji.ca` (to read the ad and fetch its photos) and
+  the one Facebook path the extension actually fills in
+  (`facebook.com/marketplace/create/*`) — nothing broader.
+  ⚠️ Worth a live re-test after this change, specifically the "reuse an
+  already-open Facebook tab" behavior in `PUSH_TO_FACEBOOK`, since it
+  couldn't be verified end-to-end without the real extension loaded.
 - **Real icons** are included at `icons/icon16.png`, `icons/icon48.png`,
   `icons/icon128.png` and referenced from `manifest.json`.
 - **A privacy policy is included**: [PRIVACY.md](PRIVACY.md) — everything

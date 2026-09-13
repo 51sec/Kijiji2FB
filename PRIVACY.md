@@ -6,6 +6,9 @@ This extension is a personal productivity tool. It does not have a
 server, does not run analytics, and does not sell, share, or transmit
 your data to the developer or any third party.
 
+Not affiliated with, endorsed by, or sponsored by Kijiji, eBay Canada,
+Meta Platforms, Inc., or Facebook.
+
 ## What data the extension handles
 
 When you click **"Send to Facebook Marketplace"** on a Kijiji ad page you
