@@ -3,12 +3,7 @@
 A Chrome extension that captures a Kijiji ad with one click and auto-fills
 a new Facebook Marketplace listing from it (title, price, description,
 photos — category and condition are left for you to pick, see below).
-One-directional: Kijiji → Facebook Marketplace only.
-
-**Free for your first 3 listings.** After that, [Kijiji to Marketplace
-Pro](https://github.com/51sec/kijiji-to-marketplace-pro) removes the cap —
-enter your Pro license key in the popup (no reinstall needed) to unlock
-unlimited listings on this same extension.
+One-directional: Kijiji → Facebook Marketplace only. Free, no limits.
 
 > **Not affiliated with, endorsed by, or sponsored by** Kijiji, eBay
 > Canada, Meta Platforms, Inc., or Facebook. "Kijiji" and "Facebook
@@ -108,36 +103,6 @@ The extension deliberately does **not** click Next/Publish for you:
 - `popup.html` / `popup.js` — lists captured listings so you can push or
   delete them.
 
-## Free vs. Pro
-
-The free tier allows **3 distinct Kijiji listings, lifetime** (re-pushing
-the same listing again doesn't use up another slot). `background.js`
-tracks which listing ids have been pushed in `chrome.storage.local` and
-blocks the `PUSH_TO_FACEBOOK` action once the cap is hit; the popup shows
-a live "X of 3 free listings remaining" indicator and an upgrade prompt
-once you're at 0.
-
-**Pro** is a license key, not a separate build — buy it once, paste the
-key into the same installed extension's "Have a Pro license key?" field,
-and the cap is lifted permanently on that browser profile. This repo
-verifies the key against
-[Gumroad's license-verification API](https://help.gumroad.com/article/76-license-keys),
-which requires no backend server.
-
-**To set this up as the developer:** create a Gumroad product, then set
-`GUMROAD_PRODUCT_PERMALINK` near the top of `background.js` to that
-product's permalink (the id at the end of its `gumroad.com/l/...` URL).
-Until that's filled in, license activation always fails — the free cap
-still works fine on its own either way.
-
-**Why this can't be airtight**: this repo is public and MIT-licensed, so
-the exact code that enforces the 3-listing cap is visible and — per the
-license already granted — legally modifiable by anyone. A determined user
-could fork this repo and delete the check. That's an inherent limitation
-of monetizing a client-side, open-source browser extension, not a bug;
-the cap is meant to prompt casual users, not withstand a deliberate
-bypass.
-
 ## Known limitations
 
 - **Facebook's DOM changes without notice.** If a field stops filling,
@@ -165,10 +130,9 @@ This extension is built with Chrome Web Store review in mind:
   filters by URL (`chrome.tabs.query({ url: ... })`, used to reuse an
   already-open Facebook tab) works via host permission instead, per
   Chrome's documented behavior. Host access is scoped to exactly
-  `kijiji.ca`/`media.kijiji.ca` (to read the ad and fetch its photos), the
-  one Facebook path the extension actually fills in
-  (`facebook.com/marketplace/create/*`), and `api.gumroad.com` (to verify
-  a Pro license key) — nothing broader.
+  `kijiji.ca`/`media.kijiji.ca` (to read the ad and fetch its photos) and
+  the one Facebook path the extension actually fills in
+  (`facebook.com/marketplace/create/*`) — nothing broader.
   ⚠️ Worth a live re-test after this change, specifically the "reuse an
   already-open Facebook tab" behavior in `PUSH_TO_FACEBOOK`, since it
   couldn't be verified end-to-end without the real extension loaded.

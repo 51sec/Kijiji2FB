@@ -1,15 +1,14 @@
 {
   "manifest_version": 3,
   "name": "Kijiji to Marketplace",
-  "version": "0.4.0",
-  "description": "Capture a Kijiji ad with one click and auto-fill it into a new Facebook Marketplace listing. Free for your first 3 listings. Not affiliated with, endorsed by, or sponsored by Kijiji, eBay Canada, Meta, or Facebook.",
+  "version": "0.5.0",
+  "description": "Capture a Kijiji ad with one click and auto-fill it into a new Facebook Marketplace listing. Not affiliated with, endorsed by, or sponsored by Kijiji, eBay Canada, Meta, or Facebook.",
   "homepage_url": "https://github.com/51sec/kijiji-to-marketplace",
   "permissions": ["storage", "unlimitedStorage"],
   "host_permissions": [
     "https://www.kijiji.ca/*",
     "https://media.kijiji.ca/*",
-    "https://www.facebook.com/marketplace/create/*",
-    "https://api.gumroad.com/*"
+    "https://www.facebook.com/marketplace/create/*"
   ],
   "background": {
     "service_worker": "background.js"
