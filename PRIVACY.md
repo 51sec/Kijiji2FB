@@ -1,4 +1,4 @@
-# Privacy Policy — Kijiji → Facebook Marketplace Sync
+# Privacy Policy — Kijiji to Marketplace
 
 _Last updated: 2026._
 

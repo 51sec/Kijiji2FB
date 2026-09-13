@@ -1,9 +1,9 @@
-# Kijiji → Facebook Marketplace Sync
+# Kijiji to Marketplace
 
 A Chrome extension that captures a Kijiji ad with one click and auto-fills
 a new Facebook Marketplace listing from it (title, price, description,
 photos — category and condition are left for you to pick, see below).
-One-directional: Kijiji → Facebook only.
+One-directional: Kijiji → Facebook Marketplace only.
 
 > **Not affiliated with, endorsed by, or sponsored by** Kijiji, eBay
 > Canada, Meta Platforms, Inc., or Facebook. "Kijiji" and "Facebook
