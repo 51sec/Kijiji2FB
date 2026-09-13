@@ -97,7 +97,7 @@ function dataUrlToFile(dataUrl, filename) {
   return new File([bytes], filename, { type: mime });
 }
 
-// Facebook's Category/Condition fields are custom pickers: clicking the field
+// Facebook's Condition field (like Category) is a custom picker: clicking it
 // opens a flat list of plain divs (no role/aria attributes) representing the
 // options. Testing showed these rows ignore script-dispatched mouse events
 // entirely (including full pointerdown/pointerup/click sequences) — Facebook
@@ -174,14 +174,12 @@ async function fillCondition(condition) {
   return selectPickerOption(['Condition'], [condition]);
 }
 
-async function fillCategory(categoryPath) {
-  if (!categoryPath || !categoryPath.length) return false;
-  // Facebook's category list is flat (one level, ~30 broad categories), so
-  // try Kijiji's most specific breadcrumb term first and fall back to
-  // broader ones — e.g. Kijiji's "Furniture > Other" won't match an FB
-  // option named "Other", but will match "Furniture".
-  return selectPickerOption(['Category'], [...categoryPath].reverse());
-}
+// Category is deliberately left for manual selection: Kijiji's breadcrumb
+// categories don't map cleanly onto Facebook's flat ~30-category list, and
+// matching it well enough to trust added complexity (and reviewer scrutiny,
+// since it leans on the same chrome.debugger trusted-click mechanism as
+// Condition) without a proportional benefit. The Kijiji category is still
+// captured and shown in the popup and the on-page banner as a hint.
 
 async function fillPhotos(images) {
   if (!images || images.length === 0) return false;
@@ -228,14 +226,11 @@ async function fillListing(listing) {
   const photosFilled = await fillPhotos(listing.images);
 
   let conditionFilled = false;
-  let categoryFilled = false;
   try {
     conditionFilled = await fillCondition(listing.condition);
-    const categoryPath = (listing.category || '').split('>').map((s) => s.trim()).filter(Boolean);
-    categoryFilled = await fillCategory(categoryPath);
   } finally {
     // Detach the debugger session as soon as we're done with the trusted
-    // clicks it was needed for, so the "being debugged" banner doesn't
+    // click it was needed for, so the "being debugged" banner doesn't
     // linger longer than necessary.
     await chrome.runtime.sendMessage({ type: 'CDP_DETACH' });
   }
@@ -246,7 +241,8 @@ async function fillListing(listing) {
   if (!filled.description) missing.push('description');
   if (!photosFilled) missing.push('photos');
   if (!conditionFilled) missing.push(listing.condition ? `condition (was "${listing.condition}")` : 'condition');
-  if (!categoryFilled) missing.push(listing.category ? `category (Kijiji: "${listing.category}")` : 'category');
+  // Category is always manual — see the comment above, after fillCondition.
+  missing.push(listing.category ? `category (Kijiji: "${listing.category}")` : 'category');
 
   showBanner(
     missing.length
