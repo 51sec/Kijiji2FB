@@ -61,4 +61,4 @@ No broader host access is requested.
 ## Contact
 
 Questions about this policy can be directed to the repository's issue
-tracker: https://github.com/51sec/Kijiji2FB/issues
+tracker: https://github.com/51sec/kijiji-to-marketplace/issues
