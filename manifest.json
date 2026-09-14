@@ -6,7 +6,6 @@
   "homepage_url": "https://github.com/51sec/kijiji-to-marketplace",
   "permissions": ["storage", "unlimitedStorage"],
   "host_permissions": [
-    "https://www.kijiji.ca/*",
     "https://media.kijiji.ca/*",
     "https://www.facebook.com/marketplace/create/*"
   ],

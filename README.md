@@ -129,10 +129,12 @@ This extension is built with Chrome Web Store review in mind:
   create`/`update`/`reload` don't require it, and the one call that
   filters by URL (`chrome.tabs.query({ url: ... })`, used to reuse an
   already-open Facebook tab) works via host permission instead, per
-  Chrome's documented behavior. Host access is scoped to exactly
-  `kijiji.ca`/`media.kijiji.ca` (to read the ad and fetch its photos) and
-  the one Facebook path the extension actually fills in
-  (`facebook.com/marketplace/create/*`) — nothing broader.
+  Chrome's documented behavior. `host_permissions` is scoped to exactly
+  `media.kijiji.ca` (to fetch the ad's photos) and the one Facebook path
+  the extension actually fills in
+  (`facebook.com/marketplace/create/*`) — nothing broader. Reading the
+  Kijiji ad page itself is a separate, narrower `content_scripts` match
+  on `kijiji.ca/v-*`, not a host permission.
   ⚠️ Worth a live re-test after this change, specifically the "reuse an
   already-open Facebook tab" behavior in `PUSH_TO_FACEBOOK`, since it
   couldn't be verified end-to-end without the real extension loaded.

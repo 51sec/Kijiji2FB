@@ -48,13 +48,19 @@ breadcrumb, and photos. Nothing is captured unless you click that button.
 
 - `storage` / `unlimitedStorage` — to save captured listings (including
   photos) locally so you can review them before pushing to Facebook.
-- `tabs` / `activeTab` — to open/reuse the Facebook "create listing" tab
-  when you click "Push to FB".
-- Host access to `kijiji.ca` / `media.kijiji.ca` — to read the ad page
-  you're capturing and fetch its photos.
-- Host access (via content script) to
-  `facebook.com/marketplace/create/*` — to fill the new-listing form on
-  that one specific page.
+- A content script on `kijiji.ca/v-*` ad pages — to read the listing
+  content on the page you're already viewing when you click "Send to
+  Facebook Marketplace". This is a separate, narrower declaration than
+  host access; it only runs on that one page pattern.
+- Host access to `media.kijiji.ca` — to fetch the ad's photos so they can
+  be re-uploaded to Facebook.
+- Host access to `facebook.com/marketplace/create/*` — to fill the
+  new-listing form on that one specific page, and to find/reuse an
+  already-open tab there when you click "Push to FB".
+
+No separate `tabs` or `activeTab` permission is requested — opening,
+reusing, and reloading that one Facebook tab works through the host
+access above instead.
 
 No broader host access is requested.
 
