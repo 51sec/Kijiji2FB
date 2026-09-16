@@ -26,6 +26,14 @@ One-directional: Kijiji → Facebook Marketplace only. Free, no limits.
 
 ![Facebook auto-fill](screenshots/facebook-autofill.png)
 
+## What's new in v0.5.1
+
+- More robust fallback matching for Facebook form fields when labels or DOM structure shift.
+- Clearer cleanup of stale pending listings if the Facebook tab is closed or the form is abandoned.
+- Safer photo downloads with fail-fast checks for broken or non-image responses.
+- Better popup UX, including a clear-all action and better status/error feedback.
+- Stored listings are now capped and sorted to avoid stale local clutter.
+
 ## Install (unpacked, for local use)
 
 1. Open `chrome://extensions`
