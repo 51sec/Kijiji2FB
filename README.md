@@ -5,6 +5,11 @@ a new Facebook Marketplace listing from it (title, price, description,
 photos — category and condition are left for you to pick, see below).
 One-directional: Kijiji → Facebook Marketplace only. Free, no limits.
 
+[![Install from Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Install%20Now-4285F4?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/kijiji-to-marketplace/ijmonbgcgokccaalihpeeidiblbncnan)
+
+Get it here: [Kijiji to Marketplace on the Chrome Web Store](https://chromewebstore.google.com/detail/kijiji-to-marketplace/ijmonbgcgokccaalihpeeidiblbncnan)
+
+
 > **Not affiliated with, endorsed by, or sponsored by** Kijiji, eBay
 > Canada, Meta Platforms, Inc., or Facebook. "Kijiji" and "Facebook
 > Marketplace" are used here only to describe what this independent,
@@ -28,13 +33,22 @@ One-directional: Kijiji → Facebook Marketplace only. Free, no limits.
 
 ## What's new in v0.5.1
 
+- Official Chrome Web Store listing: [Kijiji to Marketplace](https://chromewebstore.google.com/detail/kijiji-to-marketplace/ijmonbgcgokccaalihpeeidiblbncnan)
 - More robust fallback matching for Facebook form fields when labels or DOM structure shift.
 - Clearer cleanup of stale pending listings if the Facebook tab is closed or the form is abandoned.
 - Safer photo downloads with fail-fast checks for broken or non-image responses.
 - Better popup UX, including a clear-all action and better status/error feedback.
 - Stored listings are now capped and sorted to avoid stale local clutter.
 
-## Install (unpacked, for local use)
+## Install
+
+### Chrome Web Store
+
+Install directly from the official listing:
+
+- [Kijiji to Marketplace on Chrome Web Store](https://chromewebstore.google.com/detail/kijiji-to-marketplace/ijmonbgcgokccaalihpeeidiblbncnan)
+
+### Unpacked developer build
 
 1. Open `chrome://extensions`
 2. Turn on **Developer mode** (top right)
