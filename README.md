@@ -6,9 +6,14 @@ photos — category and condition are left for you to pick, see below).
 One-directional: Kijiji → Facebook Marketplace only. Free, no limits.
 
 [![Install from Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Install%20Now-4285F4?logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/kijiji-to-marketplace/ijmonbgcgokccaalihpeeidiblbncnan)
+[![GitHub stars](https://img.shields.io/github/stars/51sec/kijiji-to-marketplace?style=flat&logo=github)](https://github.com/51sec/kijiji-to-marketplace)
+[![License](https://img.shields.io/github/license/51sec/kijiji-to-marketplace)](LICENSE)
 
-Get it here: [Kijiji to Marketplace on the Chrome Web Store](https://chromewebstore.google.com/detail/kijiji-to-marketplace/ijmonbgcgokccaalihpeeidiblbncnan)
+## Install from the Chrome Web Store
 
+Install the official published extension in one click:
+
+[**Install Kijiji to Marketplace**](https://chromewebstore.google.com/detail/kijiji-to-marketplace/ijmonbgcgokccaalihpeeidiblbncnan)
 
 > **Not affiliated with, endorsed by, or sponsored by** Kijiji, eBay
 > Canada, Meta Platforms, Inc., or Facebook. "Kijiji" and "Facebook
@@ -31,24 +36,17 @@ Get it here: [Kijiji to Marketplace on the Chrome Web Store](https://chromewebst
 
 ![Facebook auto-fill](screenshots/facebook-autofill.png)
 
-## What's new in v0.5.1
+## What's new in v0.5.2
 
 - Official Chrome Web Store listing: [Kijiji to Marketplace](https://chromewebstore.google.com/detail/kijiji-to-marketplace/ijmonbgcgokccaalihpeeidiblbncnan)
+- Public GitHub project page with direct installation and release links.
 - More robust fallback matching for Facebook form fields when labels or DOM structure shift.
 - Clearer cleanup of stale pending listings if the Facebook tab is closed or the form is abandoned.
 - Safer photo downloads with fail-fast checks for broken or non-image responses.
 - Better popup UX, including a clear-all action and better status/error feedback.
 - Stored listings are now capped and sorted to avoid stale local clutter.
 
-## Install
-
-### Chrome Web Store
-
-Install directly from the official listing:
-
-- [Kijiji to Marketplace on Chrome Web Store](https://chromewebstore.google.com/detail/kijiji-to-marketplace/ijmonbgcgokccaalihpeeidiblbncnan)
-
-### Unpacked developer build
+## Install a developer build
 
 1. Open `chrome://extensions`
 2. Turn on **Developer mode** (top right)
@@ -137,6 +135,16 @@ The extension deliberately does **not** click Next/Publish for you:
   Contact" / "Swap/Trade" listings get no price — you'll set it manually).
 - Captures whatever photos are visible in the Kijiji gallery thumbnails;
   very large galleries may take a moment to re-upload.
+
+## Project links
+
+- [Install from Chrome Web Store](https://chromewebstore.google.com/detail/kijiji-to-marketplace/ijmonbgcgokccaalihpeeidiblbncnan)
+- [Source code and issue tracker on GitHub](https://github.com/51sec/kijiji-to-marketplace)
+- [Privacy policy](PRIVACY.md)
+
+If this extension saves you time, please share the [Chrome Web Store
+listing](https://chromewebstore.google.com/detail/kijiji-to-marketplace/ijmonbgcgokccaalihpeeidiblbncnan)
+or star the [GitHub repository](https://github.com/51sec/kijiji-to-marketplace).
 
 ## Chrome Web Store readiness
 

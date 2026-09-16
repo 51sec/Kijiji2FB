@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Kijiji to Marketplace",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Capture a Kijiji ad and auto-fill it into a new Facebook Marketplace listing. Not affiliated with Kijiji or Facebook.",
-  "homepage_url": "https://chromewebstore.google.com/detail/kijiji-to-marketplace/ijmonbgcgokccaalihpeeidiblbncnan",
+  "homepage_url": "https://github.com/51sec/kijiji-to-marketplace",
   "permissions": ["storage", "unlimitedStorage"],
   "host_permissions": [
     "https://media.kijiji.ca/*",
