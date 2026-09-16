@@ -59,6 +59,23 @@
       flex-direction: column;
       gap: 4px;
     }
+    .toolbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 8px;
+    }
+    .status {
+      min-height: 16px;
+      margin-bottom: 8px;
+      color: #65676b;
+      font-size: 12px;
+    }
+    .status.error {
+      color: #c5392e;
+    }
+    .status.success {
+      color: #1b7a2c;
+    }
     button {
       font: inherit;
       cursor: pointer;
@@ -74,6 +91,12 @@
       background: #e4e6eb;
       color: #1c1e21;
     }
+    .secondary {
+      background: #f0f2f5;
+      color: #1c1e21;
+      padding: 5px 8px;
+      font-size: 12px;
+    }
     .empty {
       color: #65676b;
       text-align: center;
@@ -84,6 +107,10 @@
 <body>
   <h1>Kijiji to Marketplace</h1>
   <div class="hint">Open a Kijiji ad and click "Send to Facebook Marketplace" to capture it, then push it here.</div>
+  <div class="toolbar">
+    <button id="clear-all" class="secondary" type="button">Clear all</button>
+  </div>
+  <div id="status" class="status" aria-live="polite"></div>
   <div id="list"></div>
   <script src="popup.js"></script>
 </body>

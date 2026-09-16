@@ -1,9 +1,22 @@
 // Copyright (c) 2026 Jon Netsec / 51Sec Inc. Licensed under the MIT License.
 // See LICENSE in the project root. Retain this notice in copies/redistributions.
 
+function setStatus(message, type) {
+  const status = document.getElementById('status');
+  status.textContent = message || '';
+  status.className = `status${type ? ` ${type}` : ''}`;
+}
+
 async function loadListings() {
-  const { listings } = await chrome.runtime.sendMessage({ type: 'GET_LISTINGS' });
-  render(listings);
+  try {
+    setStatus('');
+    const { listings } = await chrome.runtime.sendMessage({ type: 'GET_LISTINGS' });
+    render(listings || []);
+  } catch (err) {
+    console.error('[kijiji-fb-sync] failed to load listings', err);
+    setStatus('Could not load saved listings.', 'error');
+    render([]);
+  }
 }
 
 function render(listings) {
@@ -12,8 +25,11 @@ function render(listings) {
 
   if (!listings.length) {
     list.innerHTML = '<div class="empty">No listings captured yet.</div>';
+    document.getElementById('clear-all').disabled = true;
     return;
   }
+
+  document.getElementById('clear-all').disabled = false;
 
   for (const listing of listings) {
     const row = document.createElement('div');
@@ -53,7 +69,14 @@ function render(listings) {
     pushBtn.addEventListener('click', async () => {
       pushBtn.disabled = true;
       pushBtn.textContent = 'Opening…';
-      await chrome.runtime.sendMessage({ type: 'PUSH_TO_FACEBOOK', id: listing.id });
+      const response = await chrome.runtime.sendMessage({ type: 'PUSH_TO_FACEBOOK', id: listing.id });
+      if (!response?.ok) {
+        pushBtn.disabled = false;
+        pushBtn.textContent = 'Push to FB';
+        setStatus(response?.error || 'Could not open Facebook.', 'error');
+        return;
+      }
+      setStatus('Opening Facebook Marketplace…', 'success');
       window.close();
     });
 
@@ -61,8 +84,17 @@ function render(listings) {
     deleteBtn.className = 'delete';
     deleteBtn.textContent = 'Delete';
     deleteBtn.addEventListener('click', async () => {
-      await chrome.runtime.sendMessage({ type: 'DELETE_LISTING', id: listing.id });
-      loadListings();
+      deleteBtn.disabled = true;
+      try {
+        const response = await chrome.runtime.sendMessage({ type: 'DELETE_LISTING', id: listing.id });
+        if (response?.ok) {
+          await loadListings();
+          return;
+        }
+        setStatus('Could not delete this listing.', 'error');
+      } finally {
+        deleteBtn.disabled = false;
+      }
     });
 
     actions.append(pushBtn, deleteBtn);
@@ -70,5 +102,23 @@ function render(listings) {
     list.appendChild(row);
   }
 }
+
+document.getElementById('clear-all').addEventListener('click', async () => {
+  const confirmed = window.confirm('Remove all captured listings?');
+  if (!confirmed) return;
+
+  try {
+    const response = await chrome.runtime.sendMessage({ type: 'CLEAR_ALL_LISTINGS' });
+    if (response?.ok) {
+      setStatus('All captured listings removed.', 'success');
+      loadListings();
+      return;
+    }
+    setStatus('Could not clear all listings.', 'error');
+  } catch (err) {
+    console.error('[kijiji-fb-sync] failed to clear listings', err);
+    setStatus('Could not clear all listings.', 'error');
+  }
+});
 
 loadListings();

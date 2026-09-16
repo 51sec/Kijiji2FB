@@ -37,24 +37,99 @@ async function waitFor(findFn, { timeout = 20000, interval = 300 } = {}) {
   return null;
 }
 
-function findLabelSpan(text) {
-  const nodes = document.querySelectorAll('span, div');
-  for (const el of nodes) {
-    if (el.children.length === 0 && el.innerText && el.innerText.trim() === text) return el;
+function normalizeFieldText(value) {
+  return String(value || '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/[\u00A0\t\r\n]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+function buildSearchTerms(labels) {
+  const searchTerms = new Set();
+  for (const label of labels) {
+    const stripped = normalizeFieldText(label);
+    if (!stripped) continue;
+
+    searchTerms.add(stripped);
+    searchTerms.add(stripped.replace(/^item\s+/, ''));
+    searchTerms.add(stripped.replace(/\s+field$/, ''));
   }
-  return null;
+  return [...searchTerms];
+}
+
+function fieldMatchesLabel(field, labelText) {
+  const candidateText = normalizeFieldText(labelText);
+  if (!candidateText) return false;
+
+  const attributes = [
+    field.getAttribute('aria-label'),
+    field.getAttribute('placeholder'),
+    field.getAttribute('name'),
+    field.getAttribute('data-testid'),
+    field.id,
+  ].filter(Boolean);
+
+  const haystack = normalizeFieldText(
+    [
+      ...(field.closest('label') ? [field.closest('label').textContent || field.closest('label').innerText || ''] : []),
+      ...attributes,
+      field.textContent || field.innerText || '',
+    ].join(' ')
+  );
+
+  return haystack.includes(candidateText)
+    || attributes.some((value) => normalizeFieldText(value).includes(candidateText));
 }
 
 function queryByLabels(labels) {
-  for (const text of labels) {
-    const span = findLabelSpan(text);
-    if (!span) continue;
-    const label = span.closest('label');
-    if (!label) continue;
-    const field = label.querySelector('input, textarea, [contenteditable="true"]');
-    if (field) return field;
+  const searchTerms = buildSearchTerms(labels);
+
+  const fieldNodes = document.querySelectorAll(
+    'input, textarea, [role="textbox"], [contenteditable="true"]'
+  );
+
+  for (const field of fieldNodes) {
+    const label = field.closest('label');
+    const labelText = label ? label.textContent || label.innerText || '' : '';
+    const attrText = [
+      field.getAttribute('aria-label'),
+      field.getAttribute('placeholder'),
+      field.getAttribute('name'),
+      field.getAttribute('data-testid'),
+      field.id,
+    ].filter(Boolean).join(' ');
+
+    const haystack = normalizeFieldText(`${labelText} ${attrText}`);
+    if (searchTerms.some((term) => haystack.includes(term))) {
+      return field;
+    }
+
+    if (searchTerms.some((term) => fieldMatchesLabel(field, term))) {
+      return field;
+    }
   }
+
+  for (const label of document.querySelectorAll('label')) {
+    const labelText = label.textContent || label.innerText || '';
+    const haystack = normalizeFieldText(labelText);
+    if (searchTerms.some((term) => haystack.includes(term))) {
+      const field = label.querySelector('input, textarea, [role="textbox"], [contenteditable="true"]');
+      if (field) return field;
+    }
+  }
+
   return null;
+}
+
+function dispatchFieldEvents(element, value) {
+  element.dispatchEvent(new Event('input', { bubbles: true, cancelable: true }));
+  if ('value' in element && element.value !== value) {
+    element.value = value;
+  }
+  element.dispatchEvent(new Event('change', { bubbles: true, cancelable: true }));
+  element.dispatchEvent(new InputEvent('input', { bubbles: true, cancelable: true, data: value, inputType: 'insertText' }));
 }
 
 function setNativeValue(element, value) {
@@ -66,15 +141,20 @@ function setNativeValue(element, value) {
   } else {
     element.value = value;
   }
-  element.dispatchEvent(new Event('input', { bubbles: true }));
-  element.dispatchEvent(new Event('change', { bubbles: true }));
+  dispatchFieldEvents(element, value);
 }
 
 function setContentEditable(element, value) {
   element.focus();
-  document.execCommand('selectAll', false, null);
-  document.execCommand('insertText', false, value);
-  element.dispatchEvent(new Event('input', { bubbles: true }));
+  const selection = window.getSelection();
+  if (selection && selection.rangeCount) {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+  element.textContent = value;
+  dispatchFieldEvents(element, value);
 }
 
 function fillTextField(labels, value) {
